@@ -16,6 +16,12 @@ enum AppEnvironment {
     case debug
     case production
     
+    private enum InfoKey: String {
+        case baseUrl = "BaseUrl"
+        case appVersion = "CFBundleShortVersionString"
+        case buildVersion = "BuildVersion"
+    }
+    
     var name: String {
         switch self {
         case .debug: "Debug"
@@ -24,10 +30,7 @@ enum AppEnvironment {
     }
     
     var baseURL: String {
-        switch self {
-        case .debug: ""
-        case .production: ""
-        }
+        info(for: .baseUrl) ?? ""
     }
     
     var appVersion: String {
@@ -35,4 +38,16 @@ enum AppEnvironment {
         let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String? ?? "x"
         return "\(release) (\(build))"
     }
+}
+
+// MARK: - Utility
+
+extension AppEnvironment {
+  /// Retrieve value from project info plist.
+  /// - Parameter key: the needed key.
+  /// - Returns: Value related to passed key if present.
+  private func info(for key: InfoKey) -> String? {
+    return (Bundle.main.infoDictionary?[key.rawValue] as? String)?
+      .replacingOccurrences(of: "\\", with: "")
+  }
 }

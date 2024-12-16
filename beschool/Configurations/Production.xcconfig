@@ -16,5 +16,5 @@ APP_NAME = BeSchool
 APP_VERSION = 1.0.0
 CURRENT_PROJECT_VERSION = 1
 APP_BUNDLE_ID = com.igorsquadra.beschool
-BASE_URL =
-API_KEY =
+BASE_URL = https:\/\/servicetest3.edo.io/school/
+API_KEY = V9AwxnQXsQYU
