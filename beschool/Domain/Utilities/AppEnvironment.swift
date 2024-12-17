@@ -1,8 +1,8 @@
 //
 //  AppEnvironment.swift
-//  lacnews24
+//  beschool
 //
-//  Created by Igor Squadra on 14/05/24.
+//  Created by Igor Squadra on 17/12/24.
 //
 
 import Foundation
@@ -18,6 +18,7 @@ enum AppEnvironment {
     
     private enum InfoKey: String {
         case baseUrl = "BaseUrl"
+        case apiKey = "ApiKey"
         case appVersion = "CFBundleShortVersionString"
         case buildVersion = "BuildVersion"
     }
@@ -31,6 +32,10 @@ enum AppEnvironment {
     
     var baseURL: String {
         info(for: .baseUrl) ?? ""
+    }
+    
+    var apiKey: String {
+        info(for: .apiKey) ?? ""
     }
     
     var appVersion: String {

@@ -1,8 +1,8 @@
 //
 //  Utils+UserDefaults.swift
-//  lacnews24
+//  beschool
 //
-//  Created by Igor Squadra on 14/06/24.
+//  Created by Igor Squadra on 17/12/24.
 //
 
 import Foundation

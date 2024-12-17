@@ -1,8 +1,8 @@
 //
 //  Screen.swift
-//  lacnews24
+//  beschool
 //
-//  Created by Filippo Giove on 03/04/24.
+//  Created by Igor Squadra on 17/12/24.
 //
 
 import Foundation
