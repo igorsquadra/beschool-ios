@@ -271,7 +271,7 @@
 				CODE_SIGN_ENTITLEMENTS = beschool/beschool.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"beschool/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"beschool/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = 4R4EC78Z7Y;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -318,7 +318,7 @@
 				CODE_SIGN_ENTITLEMENTS = beschool/beschool.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"beschool/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"beschool/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = 4R4EC78Z7Y;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
