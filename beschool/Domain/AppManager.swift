@@ -115,5 +115,6 @@ class AppManager: ObservableObject {
         localManager.deleteAll(ClassroomData.self)
         localManager.deleteAll(ProfessorData.self)
         localManager.deleteAll(StudentData.self)
+        appState = .splash
     }
 }

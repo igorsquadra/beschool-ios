@@ -29,3 +29,9 @@ struct Classroom: Identifiable {
         self.students = students
     }
 }
+
+extension Classroom: Equatable {
+    static func == (lhs: Classroom, rhs: Classroom) -> Bool {
+        return lhs.id == rhs.id
+    }
+}

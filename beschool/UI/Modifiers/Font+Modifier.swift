@@ -14,12 +14,31 @@ enum BarlowFontWeight {
     case medium
     case semibold
     case bold
+    case black
     var fontName: String {
         switch self {
-        case .regular: "Barlow-Regular"
-        case .medium: "Barlow-Medium"
-        case .semibold: "Barlow-SemiBold"
-        case .bold: "Barlow-Bold"
+        case .regular: return "Barlow-Regular"
+        case .medium: return "Barlow-Medium"
+        case .semibold: return "Barlow-SemiBold"
+        case .bold: return "Barlow-Bold"
+        case .black: return "Barlow-Black"
+        }
+    }
+}
+
+enum BarlowCondensedFontWeight {
+    case medium
+    case semibold
+    case bold
+    case extrabold
+    case black
+    var fontName: String {
+        switch self {
+        case .medium: return "BarlowCondensed-Medium"
+        case .semibold: return "BarlowCondensed-SemiBold"
+        case .bold: return "BarlowCondensed-Bold"
+        case .extrabold: return "BarlowCondensed-ExtraBold"
+        case .black: return "BarlowCondensed-Black"
         }
     }
 }
@@ -28,7 +47,7 @@ enum RubikFontWeight {
     case semibold
     var fontName: String {
         switch self {
-        case .semibold: "Rubik-SemiBold"
+        case .semibold: return "Rubik-SemiBold"
         }
     }
 }
@@ -61,6 +80,10 @@ extension Font {
         return Font.custom(weight.fontName, size: size.rawValue)
     }
     
+    static func barlowCondensed(size: TextStyles, weight: BarlowCondensedFontWeight = .medium) -> Font {
+        return Font.custom(weight.fontName, size: size.rawValue)
+    }
+    
     static func rubik(size: TextStyles, weight: RubikFontWeight = .semibold) -> Font {
         return Font.custom(weight.fontName, size: size.rawValue)
     }
@@ -68,6 +91,10 @@ extension Font {
 
 extension UIFont {
     static func barlow(size: TextStyles, weight: BarlowFontWeight = .regular) -> UIFont {
+        UIFont(name: weight.fontName, size: size.rawValue)!
+    }
+    
+    static func barlowCondensed(size: TextStyles, weight: BarlowCondensedFontWeight = .medium) -> UIFont {
         UIFont(name: weight.fontName, size: size.rawValue)!
     }
 }

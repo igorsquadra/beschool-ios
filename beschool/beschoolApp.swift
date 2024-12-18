@@ -27,9 +27,19 @@ struct beschoolApp: App {
                     try? await appManager.syncAll()
                 }
             case .home:
-                ContentView()
-                    .onAppear {
-                    }
+                TabView {
+                    HomeView()
+                        .environmentObject(appManager)
+                        .tabItem {
+                            Label("Home", systemImage: "house")
+                        }
+                    
+                    SettingsView()
+                        .environmentObject(appManager)
+                        .tabItem {
+                            Label("Settings", systemImage: "gear")
+                        }
+                }
             }
         }
     }
