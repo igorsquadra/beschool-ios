@@ -13,14 +13,23 @@ protocol Updatable {
     var lastSync: Date? { get set }
 }
 
+@MainActor
 class LocalManager {
+    private let container: ModelContainer
     private let modelContext: ModelContext
     
-    init(modelContext: ModelContext) {
-        self.modelContext = modelContext
+    // MARK: - Initialization
+    init() {
+        do {
+            self.container = try ModelContainer(for: ClassroomData.self, StudentData.self, ProfessorData.self)
+            self.modelContext = container.mainContext
+            print(modelContext.dbPath)
+        } catch {
+            fatalError("Failed to initialize ModelContainer: \(error.localizedDescription)")
+        }
     }
     
-    func save<T: PersistentModel & Identifiable>(_ type: T.Type, _ items: [T]) {
+    func save<T: PersistentModel & Identifiable>(_ type: T.Type, _ items: [T])  where T.ID: Codable & Equatable {
         for item in items {
             if fetch(type, with: item.id) == nil {
                 modelContext.insert(item)
@@ -28,15 +37,22 @@ class LocalManager {
         }
     }
     
-    func delete<T: PersistentModel & Identifiable>(_ type: T.Type, with id: T.ID) {
+    func delete<T: PersistentModel & Identifiable>(_ type: T.Type, with id: T.ID) where T.ID: Codable & Equatable  {
         if let item = fetch(type, with: id) {
             modelContext.delete(item)
         }
     }
     
-    func fetch<T: PersistentModel & Identifiable>(_ type: T.Type, with id: T.ID) -> T? {
-        let descriptor = FetchDescriptor<T>(predicate: #Predicate { $0.id == id })
-        return try? modelContext.fetch(descriptor).first
+    func fetch<T: PersistentModel & Identifiable>(_ type: T.Type, with id: T.ID) -> T? where T.ID: Codable & Equatable {
+        let descriptor = FetchDescriptor<T>(predicate: #Predicate { item in
+            item.id == id
+        })
+        do {
+            return try modelContext.fetch(descriptor).first
+        } catch {
+            print("Fetch failed for type \(type): \(error.localizedDescription)")
+            return nil
+        }
     }
     
     func fetchAll<T: PersistentModel>(_ type: T.Type) -> [T] {
@@ -45,7 +61,15 @@ class LocalManager {
     }
     
     func fetchPendingUpdates<T: PersistentModel & Updatable>(_ type: T.Type) -> [T] {
-        let descriptor = FetchDescriptor<T>(predicate: #Predicate { $0.lastUpdate > ($0.lastSync ?? Date.distantPast) })
+        let descriptor = FetchDescriptor<T>(predicate: #Predicate { item in
+            if let lastSync = item.lastSync {
+                return item.lastUpdate > lastSync
+            } else if item.lastSync == nil {
+                return true
+            } else {
+                return false
+            }
+        })
         return (try? modelContext.fetch(descriptor)) ?? []
     }
     

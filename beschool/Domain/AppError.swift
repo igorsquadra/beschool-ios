@@ -71,7 +71,17 @@ enum AppError: LocalizedError, Error {
         }
     }
     
-    // Debugging Description
+    var actions: [AlertAction]? {
+        switch self {
+        case let .networkError(_, actions):
+            return actions
+        case let .customError(_, _, actions, _):
+            return actions
+        default:
+            return nil
+        }
+    }
+    
     var errorDescription: String? {
         switch self {
         case let .networkError(message, _):

@@ -97,7 +97,8 @@ extension View {
         Text("Hello mate")
     }
     .errorAlert(.constant(.networkError(
-            [
+        message: "",
+        actions: [
                 .cancel,
                 .custom(title: "Riprova", action: {}),
                 .ok

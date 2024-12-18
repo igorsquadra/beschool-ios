@@ -9,7 +9,7 @@ import SwiftData
 import Foundation
 
 @Model
-class ClassroomData: Codable, PersistentModel, Updatable {
+class ClassroomData: Codable, Updatable {
     @Attribute(.unique) var id: String
     var roomName: String
     var school: String

@@ -9,12 +9,23 @@
 import Foundation
 import SwiftData
 
-class AppManager {
+@MainActor
+class AppManager: ObservableObject {
     private let networkManager = NetworkManager.shared
     private let localManager: LocalManager
+    
+    @Published var appState: AppState = .splash
 
-    init(modelContext: ModelContext) {
-        localManager = LocalManager(modelContext: modelContext)
+    init() {
+        localManager = LocalManager()
+    }
+    
+    func splashAnimationEnded() {
+        appState = .home
+    }
+    
+    func restart() {
+        appState = .splash
     }
 
     // MARK: - Classroom Operations
@@ -24,7 +35,7 @@ class AppManager {
     }
 
     func editClassroom(_ classroom: Classroom) {
-        var classroomData = classroom.dataModel
+        let classroomData = classroom.dataModel
         classroomData.lastUpdate = Date()
     }
 

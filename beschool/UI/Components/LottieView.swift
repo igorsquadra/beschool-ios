@@ -12,7 +12,36 @@ enum LottieAnimations: String {
   case splash = "animation-splash-screen"
 }
 
-struct LottieView: UIViewRepresentable {
+struct LottieView: View {
+    let animationName: LottieAnimations
+    let loopMode: LottieLoopMode
+    let completion: (() -> Void)?
+    
+    init(
+        animationName: LottieAnimations,
+        loopMode: LottieLoopMode,
+        completion: (() -> Void)? = nil
+    ) {
+        self.animationName = animationName
+        self.loopMode = loopMode
+        self.completion = completion
+    }
+    
+    var body: some View {
+        ZStack(alignment: .bottomTrailing) {
+            LottieViewRepresentable(
+                animationName: animationName,
+                loopMode: loopMode,
+                completion: completion
+            )
+            Rectangle()
+                .fill(Color.white)
+                .frame(width: 100, height: 50)
+        }
+    }
+}
+
+struct LottieViewRepresentable: UIViewRepresentable {
     let animationName: LottieAnimations
     let loopMode: LottieLoopMode
     let completion: (() -> Void)?
