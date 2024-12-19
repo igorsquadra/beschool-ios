@@ -11,7 +11,7 @@ import Foundation
 enum ClassroomRouter: BaseRouter {
     case getClassrooms
     case getClassroomDetails(id: String)
-    case createClassroom(parameters: ClassroomData)
+    case createClassroom(id: String, parameters: ClassroomData)
     case updateClassroom(id: String, parameters: ClassroomData)
     case deleteClassroom(id: String)
     
@@ -22,13 +22,13 @@ enum ClassroomRouter: BaseRouter {
         case .getClassrooms:
             return "/classrooms"
         case let .getClassroomDetails(id):
-            return "/classrooms/\(id)"
-        case .createClassroom:
-            return "/classrooms"
+            return "/classroom/\(id)"
+        case let .createClassroom(id, _):
+            return "/classroom/\(id)"
         case let .updateClassroom(id, _):
-            return "/classrooms/\(id)"
+            return "/classroom/\(id)"
         case let .deleteClassroom(id):
-            return "/classrooms/\(id)"
+            return "/classroom/\(id)"
         }
     }
     
@@ -55,7 +55,7 @@ enum ClassroomRouter: BaseRouter {
         switch self {
         case .getClassrooms, .getClassroomDetails, .deleteClassroom:
             return nil
-        case let .createClassroom(parameters), let .updateClassroom(_, parameters):
+        case let .createClassroom(_, parameters), let .updateClassroom(_, parameters):
             return parameters
         }
     }

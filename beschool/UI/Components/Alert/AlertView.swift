@@ -29,11 +29,11 @@ struct AlertView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 24) {
       VStack(alignment: .leading, spacing: 8) {
-        Text(title)
-          .font(.system(size: 16, weight: .semibold))
+          Text(title.uppercased())
+              .font(.barlowCondensed(size: .bodySize, weight: .semibold))
           .foregroundStyle(.black)
         Text(message)
-          .font(.system(size: 14, weight: .regular))
+              .font(.barlow(size: .bodySize, weight: .regular))
           .foregroundStyle(.black)
       }
       if arrangeButtonsVertically {
@@ -54,7 +54,7 @@ struct AlertView: View {
     .padding(.all, 24)
     .background(
       RoundedRectangle(cornerRadius: 16, style: .circular)
-        .foregroundStyle(Color(.white))
+        .foregroundStyle(Color(.whisper))
         .shadow(radius: 4)
     )
     .frame(width: 330)

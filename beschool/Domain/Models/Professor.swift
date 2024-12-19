@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Professor: Identifiable {
+struct Professor: Identifiable, Hashable, Profile {
     let id: String
     let name: String
     let email: String
@@ -21,5 +21,11 @@ struct Professor: Identifiable {
         self.email = email
         self.subjects = subjects
         self.avatar = avatar
+    }
+}
+
+extension Professor: Equatable {
+    static func == (lhs: Professor, rhs: Professor) -> Bool {
+        return lhs.id == rhs.id
     }
 }

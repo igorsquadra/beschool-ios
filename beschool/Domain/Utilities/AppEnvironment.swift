@@ -34,6 +34,10 @@ enum AppEnvironment {
         info(for: .baseUrl) ?? ""
     }
     
+    var avatarBaseURL: String {
+        return "https://api.dicebear.com/7.x/avataaars/jpg?seed="
+    }
+    
     var apiKey: String {
         info(for: .apiKey) ?? ""
     }

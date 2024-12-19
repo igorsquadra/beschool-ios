@@ -35,9 +35,9 @@ struct CustomAlertView: ViewModifier {
       if isPresented {
         Color.gray
           .opacity(0.6)
+          .ignoresSafeArea()
       }
     }
-    .ignoresSafeArea()
     .overlay(isPresented ? alertContent : nil)
   }
 
@@ -97,7 +97,8 @@ extension View {
         Text("Hello mate")
     }
     .errorAlert(.constant(.networkError(
-            [
+        message: "",
+        actions: [
                 .cancel,
                 .custom(title: "Riprova", action: {}),
                 .ok

@@ -58,7 +58,9 @@ enum AlertAction {
                 text: title,
                 action: {
                     defaultAction()
-                }
+                },
+                cornerRadius: 8,
+                size: .small
             )
         case .cancel:
             return ButtonView(
@@ -67,7 +69,9 @@ enum AlertAction {
                 text: title,
                 action: {
                     defaultAction()
-                }
+                },
+                cornerRadius: 8,
+                size: .small
             )
         case .custom(let title, let action):
             return ButtonView(
@@ -77,7 +81,9 @@ enum AlertAction {
                 action: {
                     action()
                     defaultAction()
-                }
+                },
+                cornerRadius: 8,
+                size: .small
             )
         }
     }
