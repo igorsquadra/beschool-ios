@@ -34,6 +34,7 @@ struct IconButton: View {
             .overlay {
               icon
                 .resizable()
+                .aspectRatio(contentMode: .fit)
                 .frame(width: 20, height: 20)
                 .foregroundColor(.black)
                 .rotationEffect(.degrees(isRotating ? 360 : 0))
@@ -54,7 +55,7 @@ struct IconButton: View {
       animateRotation: true
     )
     IconButton(
-      icon: Image(.plus),
+        icon: Image(.plus),
       borderColor: .clear,
       backgroundColor: .whisper,
       action: {},

@@ -35,7 +35,7 @@ struct LottieView: View {
                 completion: completion
             )
             Rectangle()
-                .fill(Color.white)
+                .fill(.whisper)
                 .frame(width: 100, height: 50)
         }
     }

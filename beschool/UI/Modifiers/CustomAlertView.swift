@@ -35,9 +35,9 @@ struct CustomAlertView: ViewModifier {
       if isPresented {
         Color.gray
           .opacity(0.6)
+          .ignoresSafeArea()
       }
     }
-    .ignoresSafeArea()
     .overlay(isPresented ? alertContent : nil)
   }
 

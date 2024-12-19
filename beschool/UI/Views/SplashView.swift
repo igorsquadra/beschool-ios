@@ -12,17 +12,16 @@ import SwiftUI
 struct SplashView: View {
     let completion: (() -> Void)?
     var body: some View {
-        VStack(spacing: 13) {
-            Spacer()
+        ZStack {
+            Color.whisper
             LottieView(animationName: .splash, loopMode: .playOnce, completion: completion)
                 .frame(width: 339, height: 155)
-                .padding(.horizontal, 20)
                 .onAppear {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
                         completion?()
                     })
                 }
-            Spacer()
         }
+        .ignoresSafeArea()
     }
 }

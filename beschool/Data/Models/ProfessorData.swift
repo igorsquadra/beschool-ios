@@ -9,7 +9,7 @@ import SwiftData
 import Foundation
 
 @Model
-class ProfessorData: Codable, Updatable {
+class ProfessorData: Codable, Updatable, Searchable {
     @Attribute(.unique) var id: String
     var name: String
     var email: String

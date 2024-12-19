@@ -8,12 +8,12 @@
 
 import Foundation
 
-struct Classroom: Identifiable {
+struct Classroom: Identifiable, Hashable {
     let id: String
     let roomName: String
     let school: String
-    let professor: Professor?
-    let students: [Student]
+    var professor: Professor?
+    var students: [Student]
 
     init(
         id: String,

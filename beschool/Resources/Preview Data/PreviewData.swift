@@ -55,7 +55,7 @@ struct PreviewData {
     )
     
     static let professor2: Professor = Professor(
-        id: "657c70f95c5d802dc52086f1",
+        id: "657c70f95c5d802dc52086f2",
         name: "Dr. Mario Rossi",
         email: "mario.rossi@school.com",
         subjects: ["Mathematics", "Geometry"],
@@ -76,6 +76,13 @@ struct PreviewData {
             school: "High School",
             professor: professor2,
             students: Array(students.suffix(4))
+        ),
+        Classroom(
+            id: "B4",
+            roomName: "204",
+            school: "High School",
+            professor: nil,
+            students: []
         )
     ]
 }

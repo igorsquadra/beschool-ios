@@ -13,12 +13,15 @@ protocol Updatable {
     var lastSync: Date? { get set }
 }
 
+protocol Searchable: PersistentModel {
+    var name: String { get }
+}
+
 @MainActor
 class LocalManager {
     private let container: ModelContainer
     private let modelContext: ModelContext
     
-    // MARK: - Initialization
     init() {
         do {
             self.container = try ModelContainer(for: ClassroomData.self, StudentData.self, ProfessorData.self)
@@ -55,6 +58,19 @@ class LocalManager {
         }
     }
     
+    func fetchByName<T: Searchable>(_ type: T.Type, nameQuery: String) -> [T] {
+        let descriptor = FetchDescriptor<T>(
+            predicate: #Predicate { $0.name.contains(nameQuery) }
+        )
+        
+        do {
+            return try modelContext.fetch(descriptor)
+        } catch {
+            print("Error fetching \(type): \(error.localizedDescription)")
+            return []
+        }
+    }
+    
     func fetchAll<T: PersistentModel>(_ type: T.Type) -> [T] {
         let descriptor = FetchDescriptor<T>()
         return (try? modelContext.fetch(descriptor)) ?? []
@@ -79,6 +95,18 @@ class LocalManager {
             for item in allItems {
                 modelContext.delete(item)
             }
+        }
+    }
+    
+    func printAllData<T: PersistentModel>(of type: T.Type) {
+        let descriptor = FetchDescriptor<T>()
+        do {
+            let results = try modelContext.fetch(descriptor)
+            for item in results {
+                print("\(item.id) - \(item)")
+            }
+        } catch {
+            print("Error fetching \(T.self): \(error.localizedDescription)")
         }
     }
 }

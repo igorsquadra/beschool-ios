@@ -31,13 +31,17 @@ struct beschoolApp: App {
                     HomeView()
                         .environmentObject(appManager)
                         .tabItem {
-                            Label("Home", systemImage: "house")
+                            Label("", systemImage: "house")
                         }
-                    
+                    SearchView()
+                        .environmentObject(appManager)
+                        .tabItem {
+                            Label("", systemImage: "magnifyingglass")
+                        }
                     SettingsView()
                         .environmentObject(appManager)
                         .tabItem {
-                            Label("Settings", systemImage: "gear")
+                            Label("", systemImage: "gear")
                         }
                 }
             }

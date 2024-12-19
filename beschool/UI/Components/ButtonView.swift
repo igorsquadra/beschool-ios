@@ -15,7 +15,7 @@ struct ButtonView: View {
         var height: CGFloat {
             switch self {
             case .big: 64
-            case .small: 32
+            case .small: 42
             }
         }
     }
@@ -37,7 +37,7 @@ struct ButtonView: View {
         foregroundColor: Color,
         borderColor: Color = .clear,
         text: String,
-        font: Font = .system(size: 16, weight: .bold),
+        font: Font = .barlow(size: .bodySize, weight: .bold),
         action: @escaping () -> Void,
         cornerRadius: CGFloat = 50,
         size: Size = .big,
@@ -80,7 +80,7 @@ struct ButtonView: View {
         .background(backgroundColor)
         .cornerRadius(cornerRadius)
         .overlay(
-            RoundedRectangle(cornerRadius: cornerRadius, style: .circular)
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                 .stroke(borderColor, lineWidth: 2)
         )
     }

@@ -4,6 +4,7 @@ struct HomeView: View {
     @EnvironmentObject var appManager: AppManager
     @State private var classrooms: [Classroom] = []
     @State private var showAddClassroomView: Bool = false
+    @State private var showClassroomDetail: Classroom?
     
     private var columns: [GridItem] {
         if Utils.isIpad {
@@ -26,7 +27,7 @@ struct HomeView: View {
                                 professorName: classroom.professor?.name ?? "-",
                                 students: classroom.students,
                                 action: {
-                                    
+                                   showClassroomDetail = classroom
                                 }
                             )
                             .transition(
@@ -45,11 +46,21 @@ struct HomeView: View {
             .task {
                 await loadClassrooms()
             }
+            .onChange(of: appManager.classroomsUpdated) {
+                Task {
+                    await loadClassrooms()
+                }
+            }
+            .navigationDestination(item: $showClassroomDetail, destination: { classroom in
+                ClassroomDetailView(classroom: classroom)
+                    .environmentObject(appManager)
+            })
             .showPopover(isPresented: $showAddClassroomView) {
-                AddClassroomView()
+                AddClassroomView(isPresented: $showAddClassroomView)
+                    .environmentObject(appManager)
                     .frame(
                         width: Utils.isIpad ? Screen.width * 0.5 : Screen.width * 0.9,
-                        height: Utils.isIpad ? Screen.height * 0.4 : Screen.height * 0.6
+                        height: Screen.height
                     )
             }
         }
@@ -60,10 +71,10 @@ struct HomeView: View {
     private func loadClassrooms() async {
         do {
             let fetchedClassrooms = try await appManager.getClassrooms()
-            
             withAnimation(.easeInOut(duration: 0.4)) {
                 classrooms = fetchedClassrooms
             }
+            appManager.classroomsUpdated = false
         } catch {
             print("Error fetching classrooms: \(error)")
         }
@@ -73,10 +84,6 @@ struct HomeView: View {
         Task {
             try await appManager.syncAll()
         }
-    }
-    
-    private func addClassroom() {
-        // Add classroom logic here
     }
 }
 

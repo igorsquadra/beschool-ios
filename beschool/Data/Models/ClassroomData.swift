@@ -17,6 +17,7 @@ class ClassroomData: Codable, Updatable {
     var students: [StudentData]?
     var lastUpdate: Date
     var lastSync: Date?
+    var isNew: Bool
     var isDeleted: Bool
     
     init(
@@ -27,6 +28,7 @@ class ClassroomData: Codable, Updatable {
         students: [StudentData]? = nil,
         lastUpdate: Date = Date(),
         lastSync: Date? = nil,
+        isNew: Bool = false,
         isDeleted: Bool = false
     ) {
         self.id = id
@@ -36,6 +38,7 @@ class ClassroomData: Codable, Updatable {
         self.students = students
         self.lastUpdate = lastUpdate
         self.lastSync = lastSync
+        self.isNew = isNew
         self.isDeleted = isDeleted
     }
     
@@ -56,6 +59,7 @@ class ClassroomData: Codable, Updatable {
         self.students = try container.decodeIfPresent([StudentData].self, forKey: .students)
         self.lastUpdate = Date()
         self.lastSync = Date()
+        self.isNew = false
         self.isDeleted = false
     }
     

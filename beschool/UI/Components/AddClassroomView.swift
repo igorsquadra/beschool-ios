@@ -9,68 +9,92 @@
 import SwiftUI
 
 struct AddClassroomView: View {
+    @EnvironmentObject var appManager: AppManager
+    @Binding var isPresented: Bool
     @State private var roomName: String = ""
-    let professors: [Professor] = []
         
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("ADD CLASSROOM")
-                .font(.title2)
-                .bold()
-                .padding(.horizontal)
-            
-            VStack(alignment: .leading) {
-                Text("ROOM NAME")
-                    .font(.caption)
-                    .bold()
-                    .foregroundColor(.black)
-                TextField("Enter room name", text: $roomName)
-                    .textFieldStyle(.roundedBorder)
-            }
-            .padding(.horizontal)
-            
-            Text("PROFESSOR")
-                .font(.caption)
-                .bold()
-                .foregroundColor(.black)
-                .padding(.horizontal)
-            
-            ScrollView {
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: 2), spacing: 16) {
-                    ForEach(professors, id: \.id) { professor in
-                        VStack {
-                            Image(systemName: "person.crop.circle.fill")
-                                .resizable()
-                                .frame(width: 70, height: 70)
-                                .foregroundColor(.yellow)
-                                .overlay(Circle().stroke(Color.red, lineWidth: 2))
-                            
-                            Text(professor.name)
-                                .font(.footnote)
-                                .bold()
-                            
-                            Text("Matematica, Geografia, Aritmetica")
-                                .font(.caption2)
-                                .foregroundColor(.gray)
-                        }
-                        .padding()
-                        .background(Color.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .shadow(radius: 2)
+            HStack {
+                Text("ADD NEW CLASSROOM")
+                    .font(.barlowCondensed(size: .largeTitle2Size, weight: .bold))
+                Spacer()
+                Button {
+                    withAnimation {
+                        isPresented = false
                     }
+                } label: {
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(.amethystSmoke)
+                        .frame(width: 34, height: 34)
+                        .overlay {
+                            Image(.close)
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundStyle(.white)
+                                .frame(width: 14, height: 14)
+                        }
+                        
                 }
             }
-            .padding(.horizontal)
-            
-            Spacer()
+            .padding(.horizontal, 24)
+            VStack(alignment: .leading, spacing: 10) {
+                Text("ROOM NAME")
+                    .font(.barlowCondensed(size: .subheadlineSize, weight: .medium))
+                    .foregroundColor(.black)
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(Color.white)
+                    .frame(height: 56)
+                    .shadow(radius: 6)
+                    .overlay {
+                        TextField("Enter room name", text: $roomName)
+                            .offset(x: 12)
+                            .font(.barlow(size: .bodySize, weight: .regular))
+                            .textFieldStyle(.plain)
+                    }
+                
+            }
+            .padding(.horizontal, 24)
+            .padding(.bottom, 14)
+            ButtonView(
+                backgroundColor: .amethystSmoke,
+                foregroundColor: .white,
+                text: "CREATE CLASSROOM",
+                action: {
+                    addClassroom()
+                    withAnimation {
+                        isPresented = false
+                    }
+                },
+                cornerRadius: 8,
+                size: .small
+            )
+            .padding(.horizontal, 24)
+            .padding(.bottom, 14)
+            .disabled(roomName.isEmpty)
         }
-        .padding(.top)
-        .background(Color.white)
+        .padding(.vertical)
+        .background(.whisper)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(radius: 4)
     }
+    
+    private func addClassroom() {
+        guard !roomName.isEmpty else { return }
+        let classroom = Classroom(
+            id: UUID().uuidString,
+            roomName: roomName,
+            school: Utils.currentEnvironment.apiKey,
+            professor: nil,
+            students: []
+        )
+        appManager.createClassroom(classroom)
+    }
+        
 }
 
 #Preview {
-    AddClassroomView()
+    AddClassroomView(isPresented: .constant(true))
+        .environmentObject(AppManager())
+        
 }

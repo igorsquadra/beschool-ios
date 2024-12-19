@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Student: Identifiable {
+struct Student: Identifiable, Hashable, Profile {
     let id: String
     let name: String
     let email: String
@@ -21,5 +21,11 @@ struct Student: Identifiable {
         self.email = email
         self.avatar = avatar
         self.notes = notes
+    }
+}
+
+extension Student: Equatable {
+    static func == (lhs: Student, rhs: Student) -> Bool {
+        return lhs.id == rhs.id
     }
 }
