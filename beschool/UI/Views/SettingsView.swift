@@ -39,6 +39,7 @@ struct SettingsView: View {
                 .padding(.bottom, 14)
                 Spacer()
             }
+            .padding(.top, 26)
             .background(.whisper)
     }
 
