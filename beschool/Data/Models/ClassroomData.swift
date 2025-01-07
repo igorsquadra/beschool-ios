@@ -5,22 +5,21 @@
 //  Created by Igor Squadra on 17/12/24.
 //
 
-import SwiftData
 import Foundation
+import RealmSwift
 
-@Model
-class ClassroomData: Codable, Updatable {
-    @Attribute(.unique) var id: String
-    var roomName: String
-    var school: String
-    var professor: ProfessorData?
-    var students: [StudentData]?
-    var lastUpdate: Date
-    var lastSync: Date?
-    var isNew: Bool
-    var isDeleted: Bool
+class ClassroomData: Object, Codable, Identifiable, Updatable {
+    @Persisted(primaryKey: true) var id: String
+    @Persisted var roomName: String
+    @Persisted var school: String
+    @Persisted var professor: ProfessorData?
+    @Persisted var students: List<StudentData>
+    @Persisted var lastUpdate: Date
+    @Persisted var lastSync: Date?
+    @Persisted var isNew: Bool
+    @Persisted var isDeleted: Bool
     
-    init(
+    convenience init(
         id: String,
         roomName: String,
         school: String,
@@ -31,48 +30,18 @@ class ClassroomData: Codable, Updatable {
         isNew: Bool = false,
         isDeleted: Bool = false
     ) {
+        self.init()
         self.id = id
         self.roomName = roomName
         self.school = school
         self.professor = professor
-        self.students = students
+        if let students {
+            self.students = List<StudentData>()
+            self.students.append(objectsIn: students)
+        }
         self.lastUpdate = lastUpdate
         self.lastSync = lastSync
         self.isNew = isNew
         self.isDeleted = isDeleted
-    }
-    
-    enum CodingKeys: String, CodingKey {
-        case id = "_id"
-        case roomName
-        case school
-        case professor
-        case students
-    }
-    
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try container.decode(String.self, forKey: .id)
-        self.roomName = try container.decode(String.self, forKey: .roomName)
-        self.school = try container.decode(String.self, forKey: .school)
-        self.professor = try container.decodeIfPresent(ProfessorData.self, forKey: .professor)
-        self.students = try container.decodeIfPresent([StudentData].self, forKey: .students)
-        self.lastUpdate = Date()
-        self.lastSync = Date()
-        self.isNew = false
-        self.isDeleted = false
-    }
-    
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(id, forKey: .id)
-        try container.encode(roomName, forKey: .roomName)
-        try container.encode(school, forKey: .school)
-        if let professor = professor {
-            try container.encode(professor, forKey: .professor)
-        }
-        if let students = students {
-            try container.encode(students, forKey: .students)
-        }
     }
 }

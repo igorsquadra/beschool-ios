@@ -11,6 +11,8 @@ struct ClassroomDetailView: View {
     @EnvironmentObject var appManager: AppManager
     @Environment(\.dismiss) var dismiss
     @State private var classroom: Classroom
+    @State private var professor: Professor?
+    @State private var students: [Student] = []
     @State private var showProfessorCreationView = false
     @State private var showStudentCreationView = false
     @State private var showProfessorDetailView: Professor?
@@ -26,7 +28,10 @@ struct ClassroomDetailView: View {
     
     init(classroom: Classroom) {
         self.classroom = classroom
+        self._professor = State(initialValue: classroom.professor)
+        self._students = State(initialValue: classroom.students)
     }
+    
     var body: some View {
         VStack(spacing: 14) {
             header
@@ -35,7 +40,7 @@ struct ClassroomDetailView: View {
                 professorCard
                     .padding(.horizontal, 24)
                     .padding(.top, 10)
-                students
+                studentsGrid
                     .padding(.top, 10)
             }
         }
@@ -47,10 +52,12 @@ struct ClassroomDetailView: View {
                 isProfessor: false,
                 onCreate: { student in
                     if let student = student as? Student {
-                        var updatedClassroom = classroom
-                        updatedClassroom.students.append(student)
-                        classroom = updatedClassroom
-                        appManager.editClassroom(updatedClassroom)
+                        self.students.append(student)
+                        appManager.editClassroom(
+                            classroom,
+                            professor: professor,
+                            students: students
+                        )
                     }
                 }
             )
@@ -66,8 +73,12 @@ struct ClassroomDetailView: View {
                 isProfessor: true,
                 onCreate: { professor in
                     if let professor = professor as? Professor {
-                        classroom.professor = professor
-                        appManager.editClassroom(classroom)
+                        self.professor = professor
+                        appManager.editClassroom(
+                            classroom,
+                            professor: professor,
+                            students: students
+                        )
                     }
                 }
             )
@@ -97,7 +108,7 @@ struct ClassroomDetailView: View {
     }
     
     private func deleteClassroom() {
-        appManager.deleteClassroom(id: classroom.id)
+        appManager.deleteClassroom(classroom)
         dismiss()
     }
 }
@@ -149,7 +160,7 @@ extension ClassroomDetailView {
                 animateRotation: false
             )
         }
-        if let professor = classroom.professor {
+        if let professor {
             Button {
                 showProfessorDetailView = professor
             } label: {
@@ -203,7 +214,7 @@ extension ClassroomDetailView {
     }
     
     @ViewBuilder
-    private var students: some View {
+    private var studentsGrid: some View {
         HStack {
             Text("STUDENTS")
                 .font(.barlowCondensed(size: .title3Size, weight: .bold))
@@ -219,9 +230,9 @@ extension ClassroomDetailView {
             )
         }
         .padding(.horizontal, 24)
-        if !classroom.students.isEmpty {
+        if !students.isEmpty {
                 LazyVGrid(columns: columns, spacing: 20) {
-                    ForEach(classroom.students, id: \.id) { student in
+                    ForEach(students, id: \.id) { student in
                         ProfileCard(
                             avatar: student.avatar,
                             name: student.name,
@@ -237,7 +248,7 @@ extension ClassroomDetailView {
                             .scale(scale: 0.0, anchor: .center)
                             .combined(with: .opacity)
                         )
-                        .animation(.easeOut(duration: 0.5), value: classroom.students)
+                        .animation(.easeOut(duration: 0.5), value: students)
                     }
                 }
                 .padding(.horizontal, 24)

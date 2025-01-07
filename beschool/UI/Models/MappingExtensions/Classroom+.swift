@@ -8,15 +8,13 @@
 import Foundation
 
 extension Classroom {
-    var dataModel: ClassroomData {
-        ClassroomData(
+    var domainModel: ClassroomDomain {
+        ClassroomDomain(
             id: self.id,
             roomName: self.roomName,
             school: self.school,
-            professor: self.professor?.dataModel,
-            students: self.students.map { $0.dataModel },
-            lastUpdate: Date(),
-            lastSync: nil
+            professor: self.professor?.domainModel,
+            students: self.students.map { $0.domainModel }
         )
     }
 }

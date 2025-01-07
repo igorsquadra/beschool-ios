@@ -11,8 +11,8 @@ import Foundation
 enum ClassroomRouter: BaseRouter {
     case getClassrooms
     case getClassroomDetails(id: String)
-    case createClassroom(id: String, parameters: ClassroomData)
-    case updateClassroom(id: String, parameters: ClassroomData)
+    case createClassroom(id: String, parameters: ClassroomDomain)
+    case updateClassroom(id: String, parameters: ClassroomDomain)
     case deleteClassroom(id: String)
     
     var baseUrl: String { Utils.currentEnvironment.baseURL }

@@ -8,12 +8,12 @@
 import Foundation
 
 extension ProfessorData {
-    var uiModel: Professor {
-        Professor(
+    var domainModel: ProfessorDomain {
+        ProfessorDomain(
             id: self.id,
             name: self.name,
             email: self.email,
-            subjects: self.subjects,
+            subjects: Array(self.subjects),
             avatar: self.avatar
         )
     }

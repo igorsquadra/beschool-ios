@@ -39,19 +39,19 @@ class NetworkManager {
 
 extension NetworkManager {
     
-    func fetchClassrooms() async throws -> [ClassroomData]? {
+    func fetchClassrooms() async throws -> [ClassroomDomain]? {
         let response: ClassroomResponse = try await performRequest(router: ClassroomRouter.getClassrooms)
         return response.classrooms
     }
     
-    func createClassroom(_ classroom: ClassroomData) async throws -> ClassroomData {
-        let response: ClassroomData = try await performRequest(
+    func createClassroom(_ classroom: ClassroomDomain) async throws -> ClassroomDomain {
+        let response: ClassroomDomain = try await performRequest(
             router: ClassroomRouter.createClassroom(id: classroom.id, parameters: classroom)
         )
         return response
     }
     
-    func editClassroom(_ classroom: ClassroomData) async throws -> ClassroomData  {
+    func editClassroom(_ classroom: ClassroomDomain) async throws -> ClassroomDomain  {
         return try await performRequest(
             router: ClassroomRouter.updateClassroom(
                 id: classroom.id,

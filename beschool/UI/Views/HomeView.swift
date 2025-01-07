@@ -56,7 +56,9 @@ struct HomeView: View {
                     .environmentObject(appManager)
             })
             .showPopover(isPresented: $showAddClassroomView) {
-                AddClassroomView(isPresented: $showAddClassroomView)
+                AddClassroomView(isPresented: $showAddClassroomView, onCreate: { classroom in
+                    self.classrooms.append(classroom)
+                })
                     .environmentObject(appManager)
                     .frame(
                         width: Utils.isIpad ? Screen.width * 0.5 : Screen.width * 0.9,
@@ -70,11 +72,11 @@ struct HomeView: View {
     
     private func loadClassrooms() async {
         do {
-            let fetchedClassrooms = try await appManager.getClassrooms()
+            let fetchedClassrooms = try await appManager.getClassrooms().sorted(by: { $0.roomName < $1.roomName })
+            classrooms.removeAll()
             withAnimation(.easeInOut(duration: 0.4)) {
                 classrooms = fetchedClassrooms
             }
-            appManager.classroomsUpdated = false
         } catch {
             print("Error fetching classrooms: \(error)")
         }

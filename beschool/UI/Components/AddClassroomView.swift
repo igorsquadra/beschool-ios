@@ -11,7 +11,13 @@ import SwiftUI
 struct AddClassroomView: View {
     @EnvironmentObject var appManager: AppManager
     @Binding var isPresented: Bool
+    private let onCreate: (Classroom) -> Void
     @State private var roomName: String = ""
+    
+    init(isPresented: Binding<Bool>, onCreate: @escaping (Classroom) -> Void) {
+        self._isPresented = isPresented
+        self.onCreate = onCreate
+    }
         
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -89,12 +95,13 @@ struct AddClassroomView: View {
             students: []
         )
         appManager.createClassroom(classroom)
+        onCreate(classroom)
     }
         
 }
 
 #Preview {
-    AddClassroomView(isPresented: .constant(true))
+    AddClassroomView(isPresented: .constant(true), onCreate: { _ in })
         .environmentObject(AppManager())
         
 }
