@@ -42,6 +42,13 @@ enum AppEnvironment {
         info(for: .apiKey) ?? ""
     }
     
+    var dbSchemaVersion: UInt64 {
+        switch self {
+        case .debug: 3
+        case .production: 1
+        }
+    }
+    
     var appVersion: String {
         let release = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String? ?? ""
         let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String? ?? "x"

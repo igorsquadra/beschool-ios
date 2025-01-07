@@ -8,7 +8,23 @@
 
 /* Begin PBXBuildFile section */
 		7884EFAD2D108A16003E24A4 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 7884EFAC2D108A16003E24A4 /* Lottie */; };
+		788D11902D2D330F00344B9F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 788D118F2D2D330F00344B9F /* RealmSwift */; };
+		788D11912D2D334500344B9F /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 788D118F2D2D330F00344B9F /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		788D118A2D2D2D2100344B9F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				788D11912D2D334500344B9F /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		7884EF742D108323003E24A4 /* beschool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = beschool.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -40,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				788D11902D2D330F00344B9F /* RealmSwift in Frameworks */,
 				7884EFAD2D108A16003E24A4 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -51,6 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				7884EF762D108323003E24A4 /* beschool */,
+				788D118D2D2D322E00344B9F /* Frameworks */,
 				7884EF752D108323003E24A4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -63,6 +81,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		788D118D2D2D322E00344B9F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -73,6 +98,7 @@
 				7884EF702D108323003E24A4 /* Sources */,
 				7884EF712D108323003E24A4 /* Frameworks */,
 				7884EF722D108323003E24A4 /* Resources */,
+				788D118A2D2D2D2100344B9F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -84,6 +110,7 @@
 			name = beschool;
 			packageProductDependencies = (
 				7884EFAC2D108A16003E24A4 /* Lottie */,
+				788D118F2D2D330F00344B9F /* RealmSwift */,
 			);
 			productName = beschool;
 			productReference = 7884EF742D108323003E24A4 /* beschool.app */;
@@ -115,6 +142,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				7884EFAB2D108A16003E24A4 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				788D118E2D2D330F00344B9F /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7884EF752D108323003E24A4 /* Products */;
@@ -387,6 +415,14 @@
 				version = 4.5.0;
 			};
 		};
+		788D118E2D2D330F00344B9F /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -394,6 +430,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7884EFAB2D108A16003E24A4 /* XCRemoteSwiftPackageReference "lottie-ios" */;
 			productName = Lottie;
+		};
+		788D118F2D2D330F00344B9F /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 788D118E2D2D330F00344B9F /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

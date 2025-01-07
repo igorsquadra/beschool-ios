@@ -1,5 +1,5 @@
 {
-  "originHash" : "0271592b24e5dc1185a09e3f2d980d55521827815d397c9bce8e63d502a51e84",
+  "originHash" : "b013d9c3d3539a145e60e6ed6aaef8e82b247dd9114d57715df396281e385c83",
   "pins" : [
     {
       "identity" : "lottie-ios",
@@ -8,6 +8,24 @@
       "state" : {
         "revision" : "fe4c6fe3a0aa66cdeb51d549623c82ca9704b9a5",
         "version" : "4.5.0"
+      }
+    },
+    {
+      "identity" : "realm-core",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/realm/realm-core.git",
+      "state" : {
+        "revision" : "85eeca41654cc9070ad81a21a4b1d153ad467c33",
+        "version" : "14.13.1"
+      }
+    },
+    {
+      "identity" : "realm-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/realm/realm-swift.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "1f09fb14dd9d275b5686016fe8508d491b87cb0b"
       }
     }
   ],

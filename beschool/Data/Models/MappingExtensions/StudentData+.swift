@@ -8,8 +8,8 @@
 import Foundation
 
 extension StudentData {
-    var uiModel: Student {
-        Student(
+    var domainModel: StudentDomain {
+        StudentDomain(
             id: self.id,
             name: self.name,
             email: self.email,

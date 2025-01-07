@@ -26,9 +26,6 @@ class AppManager: ObservableObject {
 
     init() {
         localManager = LocalManager()
-        localManager.printAllData(of: StudentData.self)
-        localManager.printAllData(of: ProfessorData.self)
-        localManager.printAllData(of: ClassroomData.self)
     }
     
     func splashAnimationEnded() {
@@ -42,99 +39,109 @@ class AppManager: ObservableObject {
     // MARK: - Classroom Operations
     
     func createClassroom(_ classroom: Classroom) {
-        let classroomData = classroom.dataModel
-        classroomData.lastUpdate = Date()
-        classroomData.isNew = true
-        localManager.save(ClassroomData.self, [classroomData])
-        classroomsUpdated.toggle()
+        var classroomDomain = classroom.domainModel
+        classroomDomain.lastUpdate = Date()
+        classroomDomain.isNew = true
+        localManager.save([classroomDomain.dataModel])
     }
-
-    func getClassrooms() async throws -> [Classroom] {
+    
+    func getClassroom(with id: String) async throws -> [Classroom] {
         localManager.fetchAll(ClassroomData.self)
+            .map { $0.domainModel }
             .filter({ $0.isDeleted == false })
             .map { $0.uiModel }
     }
 
-    func editClassroom(_ classroom: Classroom) {
-        guard let existingClassroom = localManager.fetch(ClassroomData.self, with: classroom.id) else {
-            print("Classroom with ID \(classroom.id) not found.")
-            return
-        }
-        
-        existingClassroom.roomName = classroom.roomName
-        existingClassroom.professor = classroom.professor?.dataModel
-        existingClassroom.students = classroom.students.map { $0.dataModel }
-        existingClassroom.lastUpdate = Date()
-        classroomsUpdated.toggle()
+    func getClassrooms() async throws -> [Classroom] {
+        localManager.fetchAll(ClassroomData.self)
+            .map { $0.domainModel }
+            .filter({ $0.isDeleted == false })
+            .map { $0.uiModel }
     }
 
-    func deleteClassroom(id: String) {
-        if let classroom = localManager.fetch(ClassroomData.self, with: id) {
-            if classroom.lastSync != nil {   
-                classroom.lastUpdate = Date()
-                classroom.isDeleted = true
-            } else {
-                localManager.delete(ClassroomData.self, with: id)
-            }
+    func editClassroom(_ classroom: Classroom, professor: Professor?, students: [Student]) {
+        let existingClassroom = localManager.fetch(ClassroomData.self, with: classroom.id)
+        var classroomToSave = classroom.domainModel
+        
+        if let professorDomain = professor?.domainModel {
+            localManager.save([professorDomain.dataModel])
+            classroomToSave.professor = professorDomain
+        }
+        let studentsDomain = students.map({ $0.domainModel })
+        localManager.save(studentsDomain.map({ $0.dataModel }))
+        
+        classroomToSave.students = studentsDomain
+        classroomToSave.lastUpdate = Date()
+        if let existingClassroom {
+            classroomToSave.isNew = existingClassroom.isNew
+            classroomToSave.lastSync = existingClassroom.lastSync
+        }
+        localManager.save([classroomToSave.dataModel])
+    }
+
+    func deleteClassroom(_ classroom: Classroom) {
+        var classroomDomain = classroom.domainModel
+        if let lastSync = localManager.fetch(ClassroomData.self, with: classroomDomain.id)?.lastSync {
+            classroomDomain.lastUpdate = Date()
+            classroomDomain.lastSync = lastSync
+            classroomDomain.isDeleted = true
+            localManager.save([classroomDomain.dataModel])
+        } else {
+            // If classroom was never synced, just delete it locally
+            localManager.delete(ClassroomData.self, with: classroomDomain.id)
         }
     }
 
     // MARK: - Professor Operations
 
     func getProfessor(with id: String) -> Professor? {
-        localManager.fetch(ProfessorData.self, with: id)?.uiModel
+        let professorDomain = localManager.fetch(ProfessorData.self, with: id)?.domainModel
+        return professorDomain?.uiModel
     }
     
     func getProfessors() -> [Professor]? {
-        let professorsData = localManager.fetchAll(ProfessorData.self)
-        return professorsData.map { $0.uiModel }
+        let professorsDomain = localManager.fetchAll(ProfessorData.self).map { $0.domainModel }
+        return professorsDomain.map { $0.uiModel }
     }
 
     func editProfessor(in classroom: Classroom, updatedProfessor: Professor) {
-        let updatedClassroom = classroom.dataModel
-        updatedClassroom.professor = updatedProfessor.dataModel
+        var updatedClassroom = classroom.domainModel
+        updatedClassroom.professor = updatedProfessor.domainModel
         updatedClassroom.lastUpdate = Date()
+        localManager.save([updatedClassroom.dataModel])
+        classroomsUpdated.toggle()
     }
 
     // MARK: - Student Operations
 
     func getStudent(with id: String) -> Student? {
-        localManager.fetch(StudentData.self, with: id)?.uiModel
+        let studentDomain = localManager.fetch(StudentData.self, with: id)?.domainModel
+        return studentDomain?.uiModel
     }
     
     func getStudents() -> [Student]? {
-        localManager.fetchAll(StudentData.self).map { $0.uiModel }
+        let studentsDomain = localManager.fetchAll(StudentData.self).map { $0.domainModel }
+        return studentsDomain.map { $0.uiModel }
     }
 
     func editStudent(in classroom: Classroom, updatedStudent: Student) {
-        let updatedClassroom = classroom.dataModel
-        if let index = updatedClassroom.students?.firstIndex(where: { $0.id == updatedStudent.id }) {
-            updatedClassroom.students?[index] = updatedStudent.dataModel
+        var updatedClassroom = classroom.domainModel
+        if let index = updatedClassroom.students.firstIndex(where: { $0.id == updatedStudent.id }) {
+            updatedClassroom.students[index] = updatedStudent.domainModel
         } else {
-            updatedClassroom.students?.append(updatedStudent.dataModel)
+            updatedClassroom.students.append(updatedStudent.domainModel)
         }
         updatedClassroom.lastUpdate = Date()
-    }
-    
-    func removeStudent(with id: String, from classroomId: String) {
-        guard let classroom = localManager.fetch(ClassroomData.self, with: id) else {
-            return
-        }
-        
-        if let index = classroom.students?.firstIndex(where: { $0.id == id }) {
-            classroom.students?.remove(at: index)
-            classroom.lastUpdate = Date()
-        } else {
-            print("Student with ID \(id) not found in classroom \(classroomId).")
-        }
+        localManager.save([updatedClassroom.dataModel])
+        classroomsUpdated.toggle()
     }
     
     func searchProfiles(for query: String) -> [any Profile] {
         var results: [any Profile] = []
-        let students = localManager.fetchByName(StudentData.self, nameQuery: query).compactMap( { $0.uiModel })
-        let professors = localManager.fetchByName(ProfessorData.self, nameQuery: query).compactMap( { $0.uiModel })
-        results.append(contentsOf: students)
-        results.append(contentsOf: professors)
+        let students = localManager.fetchByName(StudentData.self, nameQuery: query).compactMap( { $0.domainModel })
+        let professors = localManager.fetchByName(ProfessorData.self, nameQuery: query).compactMap( { $0.domainModel })
+        results.append(contentsOf: students.map({ $0.uiModel }) )
+        results.append(contentsOf: professors.map({ $0.uiModel }) )
         return results
     }
 
@@ -142,36 +149,28 @@ class AppManager: ObservableObject {
 
     /// Sync all modified classrooms to the backend
     func syncAll() async throws {
-        let pendingUpdates = localManager.fetchPendingUpdates(ClassroomData.self)
-        
+        let pendingUpdates = localManager.fetchPendingUpdates(ClassroomData.self).map({ $0.domainModel })
         for classroom in pendingUpdates {
             if classroom.isDeleted,
                try await networkManager.deleteClassroom(id: classroom.id) {
                 localManager.delete(ClassroomData.self, with: classroom.id)
             } else {
-                if classroom.isNew, !classroom.isDeleted {
-                    let newClassroom = try await networkManager.createClassroom(classroom)
-                    classroom.lastSync = Date()
-                    localManager.save(ClassroomData.self, [newClassroom])
+                if classroom.lastSync == nil, !classroom.isDeleted {
+                    var newClassroom = try await networkManager.createClassroom(classroom)
+                    newClassroom.lastSync = Date()
+                    localManager.save([newClassroom.dataModel])
                 } else {
-                    let updatedClassroom = try await networkManager.editClassroom(classroom)
-                    guard let existingClassroom = localManager.fetch(ClassroomData.self, with: updatedClassroom.id) else {
-                        print("Classroom with ID \(classroom.id) not found.")
-                        return
-                    }
-                    existingClassroom.roomName = updatedClassroom.roomName
-                    existingClassroom.professor = updatedClassroom.professor
-                    existingClassroom.students = updatedClassroom.students
-                    existingClassroom.lastUpdate = Date()
-                    existingClassroom.lastSync = Date()
+                    var updatedClassroom = try await networkManager.editClassroom(classroom)
+                    updatedClassroom.lastSync = Date()
+                    localManager.save([updatedClassroom.dataModel])
                 }
             }
         }
         
-        guard let updatedClassrooms = try await networkManager.fetchClassrooms() else { return }
-        deleteAll()
-        localManager.save(ClassroomData.self, updatedClassrooms)
-        classroomsUpdated.toggle()
+        if let updatedClassrooms = try await networkManager.fetchClassrooms() {
+            deleteAll()
+            localManager.save(updatedClassrooms.compactMap({ $0.dataModel }))
+        }
         print("Sync completed. Fetched updated classrooms.")
     }
     

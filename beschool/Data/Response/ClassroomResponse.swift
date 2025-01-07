@@ -8,5 +8,5 @@
 import Foundation
 
 struct ClassroomResponse: Decodable {
-    let classrooms: [ClassroomData]?
+    let classrooms: [ClassroomDomain]?
 }

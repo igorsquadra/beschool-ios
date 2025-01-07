@@ -8,8 +8,8 @@
 import Foundation
 
 extension Professor {
-    var dataModel: ProfessorData {
-        ProfessorData(
+    var domainModel: ProfessorDomain {
+        ProfessorDomain(
             id: self.id,
             name: self.name,
             email: self.email,

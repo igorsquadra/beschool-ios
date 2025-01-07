@@ -24,7 +24,11 @@ struct beschoolApp: App {
                     appManager.splashAnimationEnded()
                 }
                 .task {
-                    try? await appManager.syncAll()
+                    do {
+                        try await appManager.syncAll()
+                    } catch {
+                        print("Error: \(error)")
+                    }
                 }
             case .home:
                 TabView {

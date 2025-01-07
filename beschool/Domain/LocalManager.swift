@@ -6,107 +6,93 @@
 //
 
 import Foundation
-import SwiftData
+import RealmSwift
 
 protocol Updatable {
     var lastUpdate: Date { get set }
     var lastSync: Date? { get set }
 }
 
-protocol Searchable: PersistentModel {
+protocol Searchable {
     var name: String { get }
 }
 
 @MainActor
 class LocalManager {
-    private let container: ModelContainer
-    private let modelContext: ModelContext
+    private let realm: Realm
     
     init() {
         do {
-            self.container = try ModelContainer(for: ClassroomData.self, StudentData.self, ProfessorData.self)
-            self.modelContext = container.mainContext
-            print(modelContext.dbPath)
+            let configuration = Realm.Configuration(
+                schemaVersion: Utils.currentEnvironment.dbSchemaVersion,
+                deleteRealmIfMigrationNeeded: true // Used for development purposes
+            )
+            self.realm = try Realm(configuration: configuration)
+            print("Realm file path: \(realm.configuration.fileURL?.absoluteString ?? "No file URL")")
         } catch {
-            fatalError("Failed to initialize ModelContainer: \(error.localizedDescription)")
+            fatalError("Failed to initialize Realm: \(error.localizedDescription)")
         }
     }
     
-    func save<T: PersistentModel & Identifiable>(_ type: T.Type, _ items: [T])  where T.ID: Codable & Equatable {
-        for item in items {
-            if fetch(type, with: item.id) == nil {
-                modelContext.insert(item)
+    func save<T: Object>(_ objects: [T]) {
+        do {
+            try realm.write {
+                realm.add(objects, update: .all)
             }
-        }
-    }
-    
-    func delete<T: PersistentModel & Identifiable>(_ type: T.Type, with id: T.ID) where T.ID: Codable & Equatable  {
-        if let item = fetch(type, with: id) {
-            modelContext.delete(item)
-        }
-    }
-    
-    func fetch<T: PersistentModel & Identifiable>(_ type: T.Type, with id: T.ID) -> T? where T.ID: Codable & Equatable {
-        let descriptor = FetchDescriptor<T>(predicate: #Predicate { item in
-            item.id == id
-        })
-        do {
-            return try modelContext.fetch(descriptor).first
         } catch {
-            print("Fetch failed for type \(type): \(error.localizedDescription)")
-            return nil
+            print("Failed to save \(T.self): \(error.localizedDescription)")
         }
     }
     
-    func fetchByName<T: Searchable>(_ type: T.Type, nameQuery: String) -> [T] {
-        let descriptor = FetchDescriptor<T>(
-            predicate: #Predicate { $0.name.contains(nameQuery) }
-        )
-        
+    func delete<T: Object & Identifiable>(_ type: T.Type, with id: String) {
+        guard let object = realm.object(ofType: type, forPrimaryKey: id) else { return }
         do {
-            return try modelContext.fetch(descriptor)
+            try realm.write {
+                realm.delete(object)
+            }
         } catch {
-            print("Error fetching \(type): \(error.localizedDescription)")
-            return []
+            print("Failed to delete \(T.self): \(error.localizedDescription)")
         }
     }
     
-    func fetchAll<T: PersistentModel>(_ type: T.Type) -> [T] {
-        let descriptor = FetchDescriptor<T>()
-        return (try? modelContext.fetch(descriptor)) ?? []
+    func fetch<T: Object>(_ type: T.Type, with id: String) -> T? {
+        return realm.object(ofType: type, forPrimaryKey: id)
     }
     
-    func fetchPendingUpdates<T: PersistentModel & Updatable>(_ type: T.Type) -> [T] {
-        let descriptor = FetchDescriptor<T>(predicate: #Predicate { item in
+    func fetchByName<T: Object & Searchable>(_ type: T.Type, nameQuery: String) -> [T] {
+        return Array(realm.objects(type).filter("name CONTAINS[c] %@", nameQuery))
+    }
+    
+    func fetchAll<T: Object>(_ type: T.Type) -> [T] {
+        return Array(realm.objects(type))
+    }
+    
+    func fetchPendingUpdates<T: Object & Updatable>(_ type: T.Type) -> [T] {
+        let results = realm.objects(type).filter { item in
             if let lastSync = item.lastSync {
                 return item.lastUpdate > lastSync
-            } else if item.lastSync == nil {
-                return true
             } else {
-                return false
+                return true
             }
-        })
-        return (try? modelContext.fetch(descriptor)) ?? []
+        }
+        return Array(results)
     }
     
-    func deleteAll<T: PersistentModel>(_ type: T.Type) {
-        let descriptor = FetchDescriptor<T>()
-        if let allItems = try? modelContext.fetch(descriptor) {
-            for item in allItems {
-                modelContext.delete(item)
+    func deleteAll<T: Object>(_ type: T.Type) {
+        let objects = realm.objects(type)
+        do {
+            try realm.write {
+                realm.delete(objects)
             }
+        } catch {
+            print("Failed to delete all \(T.self): \(error.localizedDescription)")
         }
     }
     
-    func printAllData<T: PersistentModel>(of type: T.Type) {
-        let descriptor = FetchDescriptor<T>()
-        do {
-            let results = try modelContext.fetch(descriptor)
-            for item in results {
-                print("\(item.id) - \(item)")
-            }
-        } catch {
-            print("Error fetching \(T.self): \(error.localizedDescription)")
+    func printAllData<T: Object>(_ type: T.Type) {
+        let objects = realm.objects(type)
+        for object in objects {
+            print(object)
         }
     }
 }
